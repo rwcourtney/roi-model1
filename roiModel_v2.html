@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)file:///C:/Users/Robert%20Courtney/Downloads/roiModel_v7.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PI Practice ROI Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./roiModel_v2_files/css2" rel="stylesheet">
+<script src="./roiModel_v2_files/chart.umd.js.download"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Warm near-white palette */
+  --bg:           #F8F6F2;
+  --bg-card:      #FFFFFF;
+  --bg-card-alt:  #EDEAE4;
+  --bg-success:   #EAF3DE;
+  --bg-warning:   #FAEEDA;
+  --bg-danger:    #FCEBEB;
+
+  /* Typography */
+  --text:         #1a1916;
+  --text-sec:     #4a4844;
+  --text-tert:    #8a8780;
+
+  /* Borders */
+  --border:       rgba(0,0,0,0.10);
+  --border-med:   rgba(0,0,0,0.16);
+
+  /* Accent colours — warm cream family echoing Replit site */
+  --accent:       #8B7355;
+  --accent-light: #C4A882;
+  --green:        #2D7A4F;
+  --green-dark:   #1A5C38;
+  --green-bg:     #EAF3DE;
+  --green-text:   #1A5C38;
+  --blue:         #2A5FA8;
+  --blue-bg:      #E6F1FB;
+  --blue-text:    #0C3A6E;
+  --amber:        #C47B1A;
+  --amber-bg:     #FDF0DC;
+  --amber-text:   #7A4A08;
+  --red:          #C43B3A;
+
+  /* Radii */
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  /* Fonts */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  padding: 2.5rem 1.75rem 3.5rem;
+  max-width: 840px;
+  margin: 0 auto;
+  font-size: 13.5px;
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+/* ── HEADER ────────────────────────────────────────────── */
+.header {
+  border-bottom: 0.5px solid var(--border-med);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header h1 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+.header .subtitle {
+  font-size: 12px;
+  color: var(--text-tert);
+  letter-spacing: 0.02em;
+}
+.firm-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.firm-field label {
+  font-size: 11px;
+  color: var(--text-tert);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.firm-field input[type="text"] {
+  border: 0.5px solid var(--border-med);
+  border-radius: var(--r-md);
+  padding: 0.4rem 0.75rem;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  background: var(--bg-card);
+  color: var(--text);
+  width: 200px;
+}
+.firm-field input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ── SECTION TITLE — Replit label style ────────────────── */
+.sec-title {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tert);
+  margin: 2rem 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.5px solid var(--border);
+}
+
+/* ── SLIDERS ───────────────────────────────────────────── */
+.sl-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0.65rem;
+  min-height: 32px;
+}
+.sl-row label {
+  font-size: 13px;
+  color: var(--text-sec);
+  min-width: 280px;
+  flex-shrink: 0;
+}
+.sl-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+  height: 4px;
+  cursor: pointer;
+}
+.out {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  min-width: 80px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── UPLIFT MARKER (used for both EvenUp and Median markers) */
+.uplift-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.uplift-track {
+  position: relative;
+  height: 18px;
+  pointer-events: none;
+}
+.uplift-marker {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 0;
+}
+.uplift-marker .tick {
+  width: 1px;
+  height: 8px;
+  background: var(--accent);
+  opacity: 0.7;
+}
+.uplift-marker .mlabel {
+  font-size: 10px;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-top: 1px;
+  font-weight: 500;
+}
+
+/* Margin slider marker variant */
+.margin-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.margin-track {
+  position: relative;
+  height: 18px;
+  pointer-events: none;
+}
+.margin-marker {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 0;
+}
+.margin-marker .tick {
+  width: 1px;
+  height: 8px;
+  background: var(--accent);
+  opacity: 0.7;
+}
+.margin-marker .mlabel {
+  font-size: 10px;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-top: 1px;
+  font-weight: 500;
+}
+
+/* ── METRIC CARDS ──────────────────────────────────────── */
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.metric {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-med);
+  border-radius: var(--r-lg);
+  padding: 0.85rem 1rem;
+}
+.lbl {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-tert);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.val {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 3px;
+}
+.sub {
+  font-size: 11px;
+  color: var(--text-tert);
+  line-height: 1.4;
+}
+
+/* ── DIVIDER ────────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 0.5px solid var(--border);
+  margin: 1.25rem 0;
+}
+
+/* ── EXPLANATORY TEXT ───────────────────────────────────── */
+.explain {
+  font-size: 11.5px;
+  color: var(--text-tert);
+  margin-bottom: 1rem;
+  line-height: 1.65;
+  font-style: italic;
+}
+
+
+/* ── VERDICT BOX ────────────────────────────────────────── */
+.verdict {
+  border-radius: var(--r-lg);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 0.5px solid transparent;
+}
+.verdict.go      { background: var(--green-bg); border-color: var(--green); }
+.verdict.caution { background: var(--amber-bg); border-color: var(--amber); }
+.verdict.stop    { background: var(--bg-danger); border-color: var(--red); }
+.vt {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.verdict.go      .vt { color: var(--green-dark); }
+.verdict.caution .vt { color: var(--amber-text); }
+.verdict.stop    .vt { color: var(--red); }
+.vb {
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--text-sec);
+}
+
+/* ── FOOTER ─────────────────────────────────────────────── */
+.footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 0.5px solid var(--border);
+  font-size: 10.5px;
+  color: var(--text-tert);
+  line-height: 1.65;
+  font-style: italic;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 620px) {
+  .sl-row { flex-wrap: wrap; }
+  .sl-row label { min-width: 100%; }
+  .grid3 { grid-template-columns: 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+  .header-top { flex-direction: column; }
+  .firm-field input[type="text"] { width: 100%; }
+}
+
+/* ── RETURN CTA ─────────────────────────────────────── */
+.return-wrap {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 0.5px solid var(--border-med);
+  text-align: center;
+}
+.return-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 0.5px solid var(--border-med);
+  border-radius: var(--r-md);
+  padding: 0.6rem 1.4rem;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-sec);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.return-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>Pre-Litigation AI Integration — ROI Model</h1>
+      <p class="subtitle">Personal injury practice &nbsp;·&nbsp; Financial impact analysis</p>
+    </div>
+    <div class="firm-field">
+      <label>Firm name</label>
+      <input type="text" id="firm-name" placeholder="Enter firm name" autocomplete="off">
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<p class="sec-title">Section 1 — Firm baseline (before integration)</p>
+
+<div class="sl-row">
+  <label>Pre-lit staff (paralegals / case managers)</label>
+  <input type="range" id="paralegals" min="1" max="6" step="1" value="2">
+  <span class="out" id="paralegals-out">2</span>
+</div>
+<div class="sl-row">
+  <label>Active cases per pre-lit staff member</label>
+  <input type="range" id="casespp" min="80" max="170" step="5" value="95">
+  <span class="out" id="casespp-out">95 cases</span>
+</div>
+<div class="sl-row">
+  <label>Average case duration (current)</label>
+  <input type="range" id="duration" min="6" max="18" step="1" value="8">
+  <span class="out" id="duration-out">8 months</span>
+</div>
+<div class="sl-row">
+  <label>Case duration reduction from AI</label>
+  <input type="range" id="durationred" min="0" max="4" step="0.5" value="1.5">
+  <span class="out" id="durationred-out">1.5 months</span>
+</div>
+<div class="sl-row">
+  <label>Average settlement value</label>
+  <input type="range" id="avgsettle" min="10000" max="150000" step="2500" value="22500">
+  <span class="out" id="avgsettle-out">$22,500</span>
+</div>
+<div class="sl-row">
+  <label>Attorney contingency fee</label>
+  <input type="range" id="fee" min="25" max="40" step="1" value="33">
+  <span class="out" id="fee-out">33%</span>
+</div>
+<div class="sl-row">
+  <label>Estimated pre-lit net margin (current)</label>
+  <div class="margin-wrap">
+    <input type="range" id="margin" min="15" max="45" step="1" value="30">
+    <div class="margin-track">
+      <div class="margin-marker" id="margin-marker" style="left:60%;">
+        <div class="tick"></div>
+        <div class="mlabel">Median: ~33%</div>
+      </div>
+    </div>
+  </div>
+  <span class="out" id="margin-out">30%</span>
+</div>
+
+<div class="grid3">
+  <div class="metric">
+    <p class="lbl">Total active caseload (current)</p>
+    <p class="val" id="b-docket">190 cases</p>
+    <p class="sub">Pre-lit staff × cases per staff member</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Cases settled per year (current)</p>
+    <p class="val" id="b-settled">285 / yr</p>
+    <p class="sub" id="b-settled-formula">190 ÷ 8 × 12 = 285</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Avg fee per case</p>
+    <p class="val" id="b-fee-case">$7,425</p>
+    <p class="sub">At contingency rate</p>
+  </div>
+</div>
+<div class="grid2">
+  <div class="metric">
+    <p class="lbl">Annual fee revenue (current)</p>
+    <p class="val" id="b-revenue">$2,116,125</p>
+    <p class="sub">Annual</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Pre-lit net profit (current)</p>
+    <p class="val" id="b-profit">$634,838</p>
+    <p class="sub">Profit-share baseline</p>
+  </div>
+</div>
+
+<hr class="divider" style="margin:1rem 0 0.5rem">
+<p class="explain">
+  After AI integration, pre-lit staff capacity expands (more active cases simultaneously) and cases cycle faster (shorter duration). Both effects increase annual settled cases. The model applies them sequentially: capacity multiplier first, then post-AI duration.
+</p>
+
+<div class="grid2">
+  <div class="metric">
+    <p class="lbl">Cases per staff member (post-AI)</p>
+    <p class="val" id="b-casespp-ai">143 cases</p>
+    <p class="sub">At <span id="multiplier-ref">1.5</span>× capacity increase</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Total active caseload (post-AI)</p>
+    <p class="val" id="b-docket-ai">286 cases</p>
+    <p class="sub">Same pre-lit staff, more capacity</p>
+  </div>
+</div>
+<div class="grid3">
+  <div class="metric">
+    <p class="lbl">Post-AI case duration</p>
+    <p class="val" id="b-duration-ai">6.5 months</p>
+    <p class="sub">Current minus AI reduction</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Cases settled / yr (post-AI)</p>
+    <p class="val" id="b-settled-ai">528 / yr</p>
+    <p class="sub" id="b-settled-ai-formula">286 ÷ 6.5 × 12</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Total incremental cases / yr</p>
+    <p class="val" id="b-extra-cases-disp">+243</p>
+    <p class="sub">Capacity: +<span id="b-extra-cap">144</span> &nbsp;·&nbsp; Duration: +<span id="b-extra-dur">99</span></p>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<p class="sec-title">Section 2 — Integration impact levers</p>
+
+<div class="sl-row">
+  <label>Time saved on med records/demands</label>
+  <input type="range" id="timesave" min="40" max="75" step="5" value="65">
+  <span class="out" id="timesave-out">65%</span>
+</div>
+<div class="sl-row">
+  <label>Pre-lit staff member capacity multiplier (post-AI)</label>
+  <input type="range" id="multiplier" min="1.3" max="2.5" step="0.1" value="1.5">
+  <span class="out" id="multiplier-out">1.5×</span>
+</div>
+<div class="sl-row">
+  <label>Hours currently spent per case (demand prep)</label>
+  <input type="range" id="hrs" min="6" max="20" step="1" value="12">
+  <span class="out" id="hrs-out">12 hrs</span>
+</div>
+<div class="sl-row">
+  <label>Blended staff cost (pre-lit staff &amp; attorney mix)</label>
+  <input type="range" id="rate" min="25" max="100" step="5" value="60">
+  <span class="out" id="rate-out">$60 / hr</span>
+</div>
+<div class="sl-row">
+  <label>Increase in avg settlement (better demands)</label>
+  <div class="uplift-wrap">
+    <input type="range" id="uplift" min="0" max="40" step="1" value="20">
+    <div class="uplift-track">
+      <div class="uplift-marker" id="uplift-marker" style="left:75%;">
+        <div class="tick"></div>
+        <div class="mlabel">Documented range: 15–30%</div>
+      </div>
+    </div>
+  </div>
+  <span class="out" id="uplift-out">20%</span>
+</div>
+<div class="sl-row">
+  <label>AI platform cost per case</label>
+  <input type="range" id="aicost" min="100" max="700" step="25" value="250">
+  <span class="out" id="aicost-out">$250</span>
+</div>
+
+<!-- SECTION 3 -->
+<p class="sec-title">Section 3 — Integration leadership compensation</p>
+
+<div class="sl-row">
+  <label>Monthly retainer</label>
+  <input type="range" id="draw" min="2000" max="15000" step="500" value="7500">
+  <span class="out" id="draw-out">$7,500</span>
+</div>
+<div class="sl-row">
+  <label>Profit share of net pre-lit improvement</label>
+  <input type="range" id="share" min="10" max="50" step="5" value="20">
+  <span class="out" id="share-out">20%</span>
+</div>
+
+<!-- SECTION 4 -->
+<p class="sec-title">Section 4 — Annual results: firm perspective</p>
+
+<div class="grid3">
+  <div class="metric">
+    <p class="lbl">Time savings value</p>
+    <p class="val" id="r-time">$133,380</p>
+    <p class="sub">Hours recovered × blended cost</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Increased contingency fee revenue</p>
+    <p class="val" id="r-uplift">$423,225</p>
+    <p class="sub">Better demands → higher settlements</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Caseload growth revenue</p>
+    <p class="val" id="r-growth">$541,283</p>
+    <p class="sub">+<span id="r-extra-cases">+243</span> cases/yr (capacity + duration effects)</p>
+  </div>
+</div>
+<div class="grid2">
+  <div class="metric">
+    <p class="lbl">AI platform cost (annual)</p>
+    <p class="val" id="r-aicost">$132,000</p>
+    <p class="sub">$<span id="aicost-inline">250</span> per case</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Total profit improvement</p>
+    <p class="val" id="r-improvement">$965,888</p>
+    <p class="sub">Before leadership compensation</p>
+  </div>
+</div>
+<div class="grid2">
+  <div class="metric">
+    <p class="lbl">Annual fee revenue (post-AI)</p>
+    <p class="val" id="r-fee-ai">$3,920,400</p>
+    <p class="sub">Cases settled × avg fee per case</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">New pre-lit net profit</p>
+    <p class="val" id="r-newprofit">$1,600,725</p>
+    <p class="sub">After AI costs, before comp</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 5 -->
+<p class="sec-title">Section 5 — Compensation &amp; net benefit to firm</p>
+
+<div class="grid3">
+  <div class="metric">
+    <p class="lbl">Annual retainer</p>
+    <p class="val" id="s-draw">$90,000</p>
+    <p class="sub">Fixed cost to firm</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Profit share</p>
+    <p class="val" id="s-share">$193,178</p>
+    <p class="sub"><span id="share-inline">20</span>% of net improvement</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Total compensation cost</p>
+    <p class="val" id="s-total">$283,178</p>
+    <p class="sub">Retainer + profit share</p>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="metric">
+    <p class="lbl">Net benefit to firm</p>
+    <p class="val" id="net-firm" style="color: rgb(45, 122, 79);">$682,710</p>
+    <p class="sub">Additional annual profit after comp and costs</p>
+  </div>
+  <div class="metric">
+    <p class="lbl">Return on compensation cost</p>
+    <p class="val" id="roi-smith">3.4x</p>
+    <p class="sub">For every $1 paid, firm gains $X</p>
+  </div>
+</div>
+
+
+
+<div id="verdict-box" class="verdict go">
+  <p class="vt" id="v-title">Compelling case — the firm gains significantly after all compensation</p>
+  <p class="vb" id="v-body">Net benefit of $682,710 above the current baseline, after retainer and profit share. Return on compensation cost: 3.4x. The same 2 pre-lit staff members can handle 286 active cases post-AI (up from 190), and cases cycle in 6.5 months instead of 8 — generating 243 additional settled cases per year without adding headcount.</p>
+</div>
+
+<div class="footer">
+  Figures modeled from published performance data across the PI AI sector. Leading platforms — EvenUp, Eve, and Supio — collectively serve 2,500+ firms and are processing more than 700,000 PI cases annually. Published outcomes include capacity gains of 50–100%+ and settlement improvements of 15–30% attributable to AI-assisted demand preparation and documentation completeness. Projections here are calibrated conservatively at the lower end. Actual results depend on case mix, pre-lit workflow maturity, and staff adoption discipline. This model is intended as a planning tool, not a guarantee of outcomes.
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt  = n => '$' + Math.round(n).toLocaleString();
+const fmtN = n => Math.round(n).toLocaleString();
+const fmtX = n => (Math.round(n * 10) / 10).toFixed(1) + 'x';
+function calc() {
+  const paralegals  = +$('paralegals').value;
+  const casespp     = +$('casespp').value;
+  const duration    = +$('duration').value;
+  const durationred = +$('durationred').value;
+  const avgsettle   = +$('avgsettle').value;
+  const fee         = +$('fee').value / 100;
+  const margin      = +$('margin').value / 100;
+  const timesave    = +$('timesave').value / 100;
+  const multiplier  = +$('multiplier').value;
+  const hrs         = +$('hrs').value;
+  const rate        = +$('rate').value;
+  const upliftPct   = +$('uplift').value / 100;
+  const aicost      = +$('aicost').value;
+  const draw        = +$('draw').value;
+  const share       = +$('share').value / 100;
+
+  // ── Display slider values ──────────────────────────────
+  $('paralegals-out').textContent   = paralegals;
+  $('casespp-out').textContent      = casespp + ' cases';
+  $('duration-out').textContent     = duration + ' months';
+  $('durationred-out').textContent  = durationred.toFixed(1) + ' months';
+  $('avgsettle-out').textContent    = fmt(avgsettle);
+  $('fee-out').textContent          = Math.round(fee * 100) + '%';
+  $('margin-out').textContent       = Math.round(margin * 100) + '%';
+  $('timesave-out').textContent     = Math.round(timesave * 100) + '%';
+  $('multiplier-out').textContent   = multiplier.toFixed(1) + '×';
+  $('multiplier-ref').textContent   = multiplier.toFixed(1);
+  $('hrs-out').textContent          = hrs + ' hrs';
+  $('rate-out').textContent         = fmt(rate) + ' / hr';
+  $('uplift-out').textContent       = Math.round(upliftPct * 100) + '%';
+  $('aicost-out').textContent       = fmt(aicost);
+  $('draw-out').textContent         = fmt(draw);
+  $('share-out').textContent        = Math.round(share * 100) + '%';
+  $('aicost-inline').textContent    = aicost;
+  $('share-inline').textContent     = Math.round(share * 100);
+
+  // ── Marker positions ───────────────────────────────────
+  const upliftSlider = $('uplift');
+  const markerPct = (30 - +upliftSlider.min) / (+upliftSlider.max - +upliftSlider.min);
+  $('uplift-marker').style.left = (markerPct * 100) + '%';
+
+  const marginSlider = $('margin');
+  const marginMarkerPct = (33 - +marginSlider.min) / (+marginSlider.max - +marginSlider.min);
+  $('margin-marker').style.left = (marginMarkerPct * 100) + '%';
+
+  // ── Baseline ───────────────────────────────────────────
+  const activeDocket  = paralegals * casespp;
+  const settled       = Math.round(activeDocket / duration * 12);
+  const avgFeeCase    = avgsettle * fee;
+  const grossRevenue  = settled * avgFeeCase;
+  const baseProfit    = grossRevenue * margin;
+
+  $('b-docket').textContent    = fmtN(activeDocket) + ' cases';
+  $('b-settled').textContent   = fmtN(settled) + ' / yr';
+  $('b-settled-formula').textContent = fmtN(activeDocket) + ' ÷ ' + duration + ' × 12 = ' + fmtN(settled);
+  $('b-fee-case').textContent  = fmt(avgFeeCase);
+  $('b-revenue').textContent   = fmt(grossRevenue);
+  $('b-profit').textContent    = fmt(baseProfit);
+
+  // ── Post-AI sequential calculation ────────────────────
+  const casesppAI       = Math.round(casespp * multiplier);
+  const docketAI        = paralegals * casesppAI;
+  const durationAI      = Math.max(1, duration - durationred);
+  const settledAI       = Math.round(docketAI / durationAI * 12);
+  const settledCapOnly  = Math.round(docketAI / duration * 12);
+  const extraCap        = settledCapOnly - settled;
+  const extraDur        = settledAI - settledCapOnly;
+  const extraCases      = settledAI - settled;
+
+  $('b-casespp-ai').textContent       = fmtN(casesppAI) + ' cases';
+  $('b-docket-ai').textContent        = fmtN(docketAI) + ' cases';
+  $('b-duration-ai').textContent      = durationAI.toFixed(1) + ' months';
+  $('b-settled-ai').textContent       = fmtN(settledAI) + ' / yr';
+  $('b-settled-ai-formula').textContent = fmtN(docketAI) + ' ÷ ' + durationAI.toFixed(1) + ' × 12';
+  $('b-extra-cases-disp').textContent = '+' + fmtN(extraCases);
+  $('b-extra-cap').textContent        = fmtN(extraCap);
+  $('b-extra-dur').textContent        = fmtN(extraDur);
+
+  // ── Section 4 calculations ─────────────────────────────
+  const hrsSaved       = hrs * timesave * settled;
+  const timeSavingsVal = hrsSaved * rate;
+  const upliftFeeVal   = avgsettle * upliftPct * settled * fee;
+  const growthRevenue  = extraCases * avgFeeCase * margin;
+  const aiAnnual       = aicost * settledAI;
+  const grossImprovement = timeSavingsVal + upliftFeeVal + growthRevenue - aiAnnual;
+  const newProfit        = baseProfit + grossImprovement;
+
+  $('r-time').textContent        = fmt(timeSavingsVal);
+  $('r-uplift').textContent      = fmt(upliftFeeVal);
+  $('r-growth').textContent      = fmt(growthRevenue);
+  $('r-extra-cases').textContent = '+' + fmtN(extraCases);
+  $('r-aicost').textContent      = fmt(aiAnnual);
+  $('r-improvement').textContent = fmt(grossImprovement);
+  $('r-newprofit').textContent   = fmt(newProfit);
+
+  // Annual fee revenue post-AI
+  const feeRevenueAI = settledAI * avgFeeCase;
+  $('r-fee-ai').textContent = fmt(feeRevenueAI);
+
+  // ── Section 5 calculations ─────────────────────────────
+  const drawAnnual = draw * 12;
+  const smithShare = Math.max(0, grossImprovement * share);
+  const smithTotal = drawAnnual + smithShare;
+  const netFirm    = grossImprovement - smithTotal;
+  const roiOnSmith = smithTotal > 0 ? grossImprovement / smithTotal : 0;
+
+  $('s-draw').textContent  = fmt(drawAnnual);
+  $('s-share').textContent = fmt(smithShare);
+  $('s-total').textContent = fmt(smithTotal);
+
+  const netEl = $('net-firm');
+  netEl.textContent = (netFirm < 0 ? '-' : '') + fmt(Math.abs(netFirm));
+  netEl.style.color = netFirm >= 0 ? '#2D7A4F' : '#C43B3A';
+  $('roi-smith').textContent = fmtX(roiOnSmith);
+
+  // ── Verdict ────────────────────────────────────────────
+  const vBox     = $('verdict-box');
+  const vTitle   = $('v-title');
+  const vBody    = $('v-body');
+  const firmName = $('firm-name').value.trim() || 'the firm';
+  const staffLabel = paralegals === 1 ? '1 pre-lit staff member' : paralegals + ' pre-lit staff members';
+
+  if (netFirm > 25000) {
+    vBox.className = 'verdict go';
+    vTitle.textContent = 'Compelling case — ' + firmName + ' gains significantly after all compensation';
+    vBody.textContent  = 'Net benefit of ' + fmt(netFirm) + ' above the current baseline, after retainer and profit share. Return on compensation cost: ' + fmtX(roiOnSmith) + '. The same ' + staffLabel + ' can handle ' + fmtN(docketAI) + ' active cases post-AI (up from ' + fmtN(activeDocket) + '), and cases cycle in ' + durationAI.toFixed(1) + ' months instead of ' + duration + ' — generating ' + fmtN(extraCases) + ' additional settled cases per year without adding headcount.';
+  } else if (netFirm > 0) {
+    vBox.className = 'verdict caution';
+    vTitle.textContent = 'Positive but marginal at these inputs';
+    vBody.textContent  = 'Net benefit of ' + fmt(netFirm) + ' after compensation. Adjusting the staff capacity assumption or reducing the monthly retainer meaningfully improves this outcome. Consider which inputs the firm can verify from its own caseload data.';
+  } else {
+    vBox.className = 'verdict stop';
+    vTitle.textContent = 'Net negative at these inputs — revisit assumptions';
+    vBody.textContent  = 'Compensation exceeds modeled benefit by ' + fmt(Math.abs(netFirm)) + '. Reduce the retainer, lower the profit-share percentage, or verify whether the staff capacity uplift assumption is realistic for this firm\'s case mix.';
+  }
+
+  // ── Chart ──────────────────────────────────────────────
+}
+
+['paralegals','casespp','duration','durationred','avgsettle','fee','margin',
+ 'timesave','multiplier','hrs','rate','uplift','aicost','draw','share']
+  .forEach(id => $(id).addEventListener('input', calc));
+$('firm-name').addEventListener('input', calc);
+
+calc();
+</script>
+
+<div class="return-wrap">
+  <a class="return-btn" href="https://pipracticeoperations.com/" target="_self">
+    ← Return to main page
+  </a>
+</div>
+
+
+
+</body></html>
